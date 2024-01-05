@@ -1,5 +1,23 @@
-.mosca {
+.mosca1 {
 	height: 50px;
 	width: 50px;
 	position: absolute;
+}
+.mosca2 {
+	height: 75px;
+	width: 75px;
+	position: absolute;
+}
+.mosca3 {
+	height: 100px;
+	width: 100px;
+	position: absolute;
+}
+.lado1 {
+	transform: scaleX(1);
+	/* Configuração padrão de qualquer imagem */
+}
+.lado1 {
+	transform: scaleX(-1);
+	/* Espelhamento ou Meio Giro no eixo X */
 }
