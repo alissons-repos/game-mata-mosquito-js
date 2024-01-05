@@ -1,5 +1,6 @@
 let largura = 0;
 let altura = 0;
+let vidas = 1;
 let body = document.getElementById('raiz');
 
 // Função que indica o tamanho da página
@@ -10,9 +11,23 @@ function ajustarTamanhoPagina() {
 }
 
 function gerarMoscaEmPosicaoRandomica() {
-	// Remover moscas anterior caso exista
+	// Remover mosca "vivas", caso existam
 	if (document.getElementById('mosca')) {
 		document.getElementById('mosca').remove();
+
+		if (vidas > 3) {
+			clearInterval(jogoRodando);
+			document.getElementById('painel').remove();
+
+			const gameOver = document.createElement('img');
+			gameOver.src = './imagens/game_over.png';
+			gameOver.style.verticalAlign = 'middle';
+			document.body.appendChild(gameOver);
+			return;
+		} else {
+			document.getElementById('v' + vidas).src = './imagens/coracao_vazio.png';
+			vidas++;
+		}
 	}
 	const variacao = gerarTamanhoRandomico();
 
@@ -68,14 +83,7 @@ function gerarLadoRandomico() {
 }
 
 function matarMosca() {
-	const lado = Math.floor(Math.random() * 2);
-
-	switch (lado) {
-		case 0:
-			return 'lado1';
-		case 1:
-			return 'lado2';
-	}
+	this.remove();
 }
 
 // Chamando função para ajustar o tamanho da página disponível
@@ -84,6 +92,6 @@ ajustarTamanhoPagina();
 // Atribuição da função acima como "ouvinte" do evento de redimensionamento do body
 body.onresize = ajustarTamanhoPagina;
 
-// setInterval(() => {
-// 	gerarMoscaEmPosicaoRandomica();
-// }, 1000);
+const jogoRodando = setInterval(() => {
+	gerarMoscaEmPosicaoRandomica();
+}, 1000);
