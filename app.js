@@ -1,14 +1,16 @@
 let largura = 0;
 let altura = 0;
 let vidas = 1;
+let preparacao = 3;
 let tempo = 6;
 let body = document.getElementById('raiz');
+let start = document.getElementById('start');
 
 // Função que indica o tamanho da página
 function ajustarTamanhoPagina() {
 	largura = window.innerWidth;
 	altura = window.innerHeight;
-	console.log(largura, altura);
+	// console.log(largura, altura);
 }
 
 function gerarMoscaEmPosicaoRandomica() {
@@ -51,6 +53,7 @@ function gerarMoscaEmPosicaoRandomica() {
 	mosca.className = gerarLadoRandomico();
 
 	mosca.onclick = matarMosca;
+	mosca.style.zIndex = '3';
 	mosca.style.height = variacao + 'px';
 	mosca.style.width = variacao + 'px';
 	mosca.style.position = 'absolute';
@@ -65,7 +68,6 @@ function gerarMoscaEmPosicaoRandomica() {
 function gerarTamanhoRandomico() {
 	const tamanho = Math.floor(Math.random() * 3);
 
-	// Tamanho de height e width definidos também no css
 	switch (tamanho) {
 		case 0:
 			return 50;
@@ -91,13 +93,35 @@ function matarMosca() {
 	this.remove();
 }
 
+function iniciarJogo() {
+	const preparar = setInterval(() => {
+		preparacao -= 1;
+		if (preparacao <= 0) {
+			clearInterval(preparar);
+			// document.getElementById('preparar').innerHTML = 'Já !!!';
+			document.getElementById('preparar').remove();
+			return;
+		} else {
+			document.getElementById('preparar').innerHTML = preparacao;
+		}
+	}, 1000);
+
+	const jogoRodando = setInterval(() => {
+		// document.getElementById('inicio').remove();
+		gerarMoscaEmPosicaoRandomica();
+	}, 1000);
+}
+
 // Chamando função para ajustar o tamanho da página disponível
 ajustarTamanhoPagina();
 
 // Atribuição da função acima como "ouvinte" do evento de redimensionamento do body
 body.onresize = ajustarTamanhoPagina;
+body.onclick = iniciarJogo;
 
+// Iniciando painel de tempo e preparação
 document.getElementById('cronometro').innerHTML = tempo;
+document.getElementById('preparar').innerHTML = preparacao;
 
 const cronometro = setInterval(() => {
 	tempo -= 1;
@@ -105,6 +129,7 @@ const cronometro = setInterval(() => {
 	if (tempo < 0) {
 		clearInterval(cronometro);
 		clearInterval(jogoRodando);
+		document.getElementById('mosca').remove();
 		document.getElementById('painel').remove();
 
 		const vitoria = document.createElement('img');
@@ -117,7 +142,21 @@ const cronometro = setInterval(() => {
 	}
 }, 1000);
 
-const jogoRodando = setInterval(() => {
-	document.getElementById('inicio').remove();
-	gerarMoscaEmPosicaoRandomica();
-}, 1000);
+const inicioJogo = setTimeout(() => {}, 3000);
+
+// const preparar = setInterval(() => {
+// 	preparacao -= 1;
+// 	if (preparacao <= 0) {
+// 		clearInterval(preparar);
+// 		// document.getElementById('preparar').innerHTML = 'Já !!!';
+// 		document.getElementById('preparar').remove();
+// 		return;
+// 	} else {
+// 		document.getElementById('preparar').innerHTML = preparacao;
+// 	}
+// }, 1000);
+
+// const jogoRodando = setInterval(() => {
+// 	// document.getElementById('inicio').remove();
+// 	gerarMoscaEmPosicaoRandomica();
+// }, 1000);
