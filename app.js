@@ -1,6 +1,7 @@
 let largura = 0;
 let altura = 0;
 let vidas = 1;
+let tempo = 6;
 let body = document.getElementById('raiz');
 
 // Função que indica o tamanho da página
@@ -16,13 +17,17 @@ function gerarMoscaEmPosicaoRandomica() {
 		document.getElementById('mosca').remove();
 
 		if (vidas > 3) {
+			// Uma alternativa para o fim de jogo seria criar outra página html
+			// window.location.href = 'game-over.html';
+
+			clearInterval(cronometro);
 			clearInterval(jogoRodando);
 			document.getElementById('painel').remove();
 
 			const gameOver = document.createElement('img');
 			gameOver.src = './imagens/game_over.png';
-			gameOver.style.verticalAlign = 'middle';
-			document.body.appendChild(gameOver);
+			gameOver.className = 'vitoria-gameover';
+			body.appendChild(gameOver);
 			return;
 		} else {
 			document.getElementById('v' + vidas).src = './imagens/coracao_vazio.png';
@@ -92,6 +97,27 @@ ajustarTamanhoPagina();
 // Atribuição da função acima como "ouvinte" do evento de redimensionamento do body
 body.onresize = ajustarTamanhoPagina;
 
+document.getElementById('cronometro').innerHTML = tempo;
+
+const cronometro = setInterval(() => {
+	tempo -= 1;
+
+	if (tempo < 0) {
+		clearInterval(cronometro);
+		clearInterval(jogoRodando);
+		document.getElementById('painel').remove();
+
+		const vitoria = document.createElement('img');
+		vitoria.src = './imagens/vitoria.png';
+		vitoria.className = 'vitoria-gameover';
+		body.appendChild(vitoria);
+		return;
+	} else {
+		document.getElementById('cronometro').innerHTML = tempo;
+	}
+}, 1000);
+
 const jogoRodando = setInterval(() => {
+	document.getElementById('inicio').remove();
 	gerarMoscaEmPosicaoRandomica();
 }, 1000);

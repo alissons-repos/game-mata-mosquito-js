@@ -1,14 +1,23 @@
 body {
 	display: flex;
+	/* flex-direction: column; */
 	justify-content: center;
 	align-items: center;
-	height: 100vh;
-	width: 100vw;
-	background-image: url('./imagens/bg.jpg');
+	margin: 0;
+	padding: 0;
+	/* background-image: url('./imagens/bg.jpg');
 	background-repeat: no-repeat;
 	background-position: center top;
-	background-size: cover cover;
+	background-size: cover cover; */
 }
+/* .centralizado {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 16px;
+} */
 .painel {
 	position: absolute;
 	left: 0px;
@@ -22,6 +31,16 @@ body {
 	padding: 16px;
 	border-radius: 0 24px 0 0;
 	background-color: rgb(245, 245, 245, 0.5);
+}
+.background {
+	position: absolute;
+	top: 0;
+	height: 100vh;
+	width: 100vw;
+}
+.vitoria-gameover {
+	position: absolute;
+	top: 5%;
 }
 .vidas {
 	float: left;
