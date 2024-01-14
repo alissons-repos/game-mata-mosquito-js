@@ -1,41 +1,17 @@
+// Declaração de variáveis globais
 let largura = 0;
 let altura = 0;
-let vidas = 1;
-let preparacao = 3;
-let tempo = 6;
+let pontuacao = 0;
+let pontos = 'pontos';
 let body = document.getElementById('raiz');
 let start = document.getElementById('start');
 
-// Função que indica o tamanho da página
 function ajustarTamanhoPagina() {
 	largura = window.innerWidth;
 	altura = window.innerHeight;
-	// console.log(largura, altura);
 }
 
 function gerarMoscaEmPosicaoRandomica() {
-	// Remover mosca "vivas", caso existam
-	if (document.getElementById('mosca')) {
-		document.getElementById('mosca').remove();
-
-		if (vidas > 3) {
-			// Uma alternativa para o fim de jogo seria criar outra página html
-			// window.location.href = 'game-over.html';
-
-			clearInterval(cronometro);
-			clearInterval(jogoRodando);
-			document.getElementById('painel').remove();
-
-			const gameOver = document.createElement('img');
-			gameOver.src = './imagens/game_over.png';
-			gameOver.className = 'vitoria-gameover';
-			body.appendChild(gameOver);
-			return;
-		} else {
-			document.getElementById('v' + vidas).src = './imagens/coracao_vazio.png';
-			vidas++;
-		}
-	}
 	const variacao = gerarTamanhoRandomico();
 
 	let posicaoX = Math.floor(Math.random() * largura) - variacao;
@@ -45,13 +21,10 @@ function gerarMoscaEmPosicaoRandomica() {
 	posicaoX = posicaoX < 0 ? 0 : posicaoX;
 	posicaoY = posicaoY < 0 ? 0 : posicaoY;
 
-	// Manipulando o DOM para mostrar a mosca
 	const mosca = document.createElement('img');
-
 	mosca.src = './imagens/mosca.png';
 	mosca.id = 'mosca';
 	mosca.className = gerarLadoRandomico();
-
 	mosca.onclick = matarMosca;
 	mosca.style.zIndex = '3';
 	mosca.style.height = variacao + 'px';
@@ -59,10 +32,9 @@ function gerarMoscaEmPosicaoRandomica() {
 	mosca.style.position = 'absolute';
 	mosca.style.left = posicaoX + 'px';
 	mosca.style.top = posicaoY + 'px';
+	mosca.style.cursor = 'pointer';
 
-	document.body.appendChild(mosca);
-
-	console.log(variacao, posicaoX, posicaoY);
+	body.appendChild(mosca);
 }
 
 function gerarTamanhoRandomico() {
@@ -89,27 +61,111 @@ function gerarLadoRandomico() {
 	}
 }
 
+function selecionarLevel() {
+	const level = document.getElementById('selecao').value;
+
+	switch (level) {
+		case 'facil':
+			return 1200;
+		case 'moderado':
+			return 1000;
+		case 'dificl':
+			return 800;
+		case 'muito dificil':
+			return 600;
+		default:
+			return 1000;
+	}
+}
+
 function matarMosca() {
+	pontuacao++;
+	pontos = pontuacao > 1 || pontuacao < 1 ? 'pontos' : 'ponto';
+
+	document.getElementById('pontuacao').innerHTML = `${pontuacao} ${pontos}`;
+
 	this.remove();
 }
 
 function iniciarJogo() {
+	let vidas = 1;
+	let preparacao = 3;
+	let tempo = 15;
+	let segundos = 'segundos';
+	pontuacao = 0;
+	pontos = 'pontos';
+
+	document.getElementById('pontuacao').innerHTML = `${pontuacao} ${pontos}`;
+	document.getElementById('tempo').innerHTML = `${tempo} ${segundos}`;
+	document.getElementById('preparar').innerHTML = preparacao;
+
+	document.getElementById('inicio').style.display = 'none';
+	document.getElementById('vitoria').style.display = 'none';
+	document.getElementById('derrota').style.display = 'none';
+
+	document.getElementById('preparar').style.display = 'block';
+	document.getElementById('painel').style.display = 'flex';
+	document.getElementById('pontos').style.display = 'flex';
+
+	for (let i = 1; i <= 3; i++) {
+		document.getElementById('v' + i).src = './imagens/coracao_cheio.png';
+	}
+
 	const preparar = setInterval(() => {
-		preparacao -= 1;
-		if (preparacao <= 0) {
+		preparacao--;
+
+		if (preparacao < 1) {
 			clearInterval(preparar);
-			// document.getElementById('preparar').innerHTML = 'Já !!!';
-			document.getElementById('preparar').remove();
-			return;
+			document.getElementById('preparar').innerHTML = `Sobreviva!`;
 		} else {
 			document.getElementById('preparar').innerHTML = preparacao;
 		}
 	}, 1000);
 
-	const jogoRodando = setInterval(() => {
-		// document.getElementById('inicio').remove();
-		gerarMoscaEmPosicaoRandomica();
-	}, 1000);
+	const delayPreparacao = setTimeout(() => {
+		const jogoRodando = setInterval(() => {
+			if (document.getElementById('mosca')) {
+				document.getElementById('mosca').remove();
+
+				if (vidas > 3) {
+					clearInterval(cronometro);
+					clearInterval(jogoRodando);
+					document.getElementById('painel').style.display = 'none';
+					document.getElementById('pontos').style.display = 'none';
+					document.getElementById('derrota').style.display = 'flex';
+					return;
+				} else {
+					document.getElementById('v' + vidas).src = './imagens/coracao_vazio.png';
+					vidas++;
+				}
+			}
+
+			gerarMoscaEmPosicaoRandomica();
+
+			if (document.getElementById('preparar')) {
+				document.getElementById('preparar').style.display = 'none';
+			}
+		}, selecionarLevel());
+
+		const cronometro = setInterval(() => {
+			tempo--;
+			segundos = tempo > 1 || tempo < 1 ? 'segundos' : 'segundo';
+
+			if (tempo < 0) {
+				clearInterval(cronometro);
+				clearInterval(jogoRodando);
+				document.getElementById('mosca').remove();
+				document.getElementById('painel').style.display = 'none';
+				document.getElementById('pontos').style.display = 'none';
+				document.getElementById('vitoria').style.display = 'flex';
+				return;
+			} else {
+				document.getElementById('tempo').innerHTML = `${tempo} ${segundos}`;
+			}
+		}, 1000);
+
+		clearTimeout(delayPreparacao);
+	}, 3000);
 }
 
 // Chamando função para ajustar o tamanho da página disponível
@@ -117,46 +173,8 @@ ajustarTamanhoPagina();
 
 // Atribuição da função acima como "ouvinte" do evento de redimensionamento do body
 body.onresize = ajustarTamanhoPagina;
-body.onclick = iniciarJogo;
+start.onclick = iniciarJogo;
 
 // Iniciando painel de tempo e preparação
-document.getElementById('cronometro').innerHTML = tempo;
-document.getElementById('preparar').innerHTML = preparacao;
-
-const cronometro = setInterval(() => {
-	tempo -= 1;
-
-	if (tempo < 0) {
-		clearInterval(cronometro);
-		clearInterval(jogoRodando);
-		document.getElementById('mosca').remove();
-		document.getElementById('painel').remove();
-
-		const vitoria = document.createElement('img');
-		vitoria.src = './imagens/vitoria.png';
-		vitoria.className = 'vitoria-gameover';
-		body.appendChild(vitoria);
-		return;
-	} else {
-		document.getElementById('cronometro').innerHTML = tempo;
-	}
-}, 1000);
-
-const inicioJogo = setTimeout(() => {}, 3000);
-
-// const preparar = setInterval(() => {
-// 	preparacao -= 1;
-// 	if (preparacao <= 0) {
-// 		clearInterval(preparar);
-// 		// document.getElementById('preparar').innerHTML = 'Já !!!';
-// 		document.getElementById('preparar').remove();
-// 		return;
-// 	} else {
-// 		document.getElementById('preparar').innerHTML = preparacao;
-// 	}
-// }, 1000);
-
-// const jogoRodando = setInterval(() => {
-// 	// document.getElementById('inicio').remove();
-// 	gerarMoscaEmPosicaoRandomica();
-// }, 1000);
+document.getElementById('vitoria').style.display = 'none';
+document.getElementById('derrota').style.display = 'none';
