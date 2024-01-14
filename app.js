@@ -90,7 +90,7 @@ function matarMosca() {
 function iniciarJogo() {
 	let vidas = 1;
 	let preparacao = 3;
-	let tempo = 15;
+	let tempo = 30;
 	let segundos = 'segundos';
 	pontuacao = 0;
 	pontos = 'pontos';
